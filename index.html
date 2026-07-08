@@ -17,7 +17,7 @@
 
     <!-- Fontes mágicas e delicadas do Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&family=Sofia&display=swap" rel="stylesheet">
-    
+
     <style>
         * {
             margin: 0;
@@ -58,17 +58,17 @@
     top: -30px !important; /* Obriga ela a subir para a borda */
     left: 50%;
     transform: translateX(-50%);
-    
+
     width: 60px;
     height: 60px;
     background: #f3e8ff; 
     border: 3px solid #f59e0b; 
     border-radius: 50%; 
-    
+
     display: flex;
     justify-content: center;
     align-items: center;
-    
+
     z-index: 10 !important;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
@@ -143,7 +143,7 @@
 
         .subtitle {
             color: #e9d5ff;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 600;
             margin-bottom: 35px;
         }
@@ -186,6 +186,9 @@
             text-transform: uppercase;
             font-size: 0.9rem;
             letter-spacing: 0.5px;
+            
+            /* ESSA É A LINHA QUE ATIVA A MÁGICA: Pulsa a cada 2 segundos para sempre */
+            animation: pulseGlow 2s infinite;
         }
 
         .btn:hover {
@@ -214,7 +217,7 @@
             height: 310px;
             background: transparent;
         }
-        
+
         /* ESTILO DO CONTADOR REGRESSIVO */
         .timer-grid {
             display: flex;
@@ -247,6 +250,56 @@
             font-weight: 600;
             margin-top: 2px;
         }
+    
+        /* ========================================= */
+        /* EFEITO ESPECIAL: BOTÃO PULSANTE           */
+        /* ========================================= */
+        @keyframes pulseGlow {
+            0% {
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 0 0 rgba(245, 158, 11, 0.7);
+                transform: scale(1);
+            }
+            50% {
+                /* Aumenta o botão 3% e solta uma onda de luz dourada que vai sumindo */
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 20px 8px rgba(245, 158, 11, 0);
+                transform: scale(1.03);
+            }
+            100% {
+                box-shadow: 0 4px 10px rgba(0,0,0,0.2), 0 0 0 0 rgba(245, 158, 11, 0);
+                transform: scale(1);
+            }
+        }
+
+        /* ========================================= */
+        /* EFEITO ESPECIAL: POEIRA MÁGICA FLUTUANTE  */
+        /* ========================================= */
+        #magic-dust {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            pointer-events: none; /* Garante que os convidados ainda consigam clicar nos botões */
+            z-index: 9999; /* Faz a mágica flutuar por cima de todo o convite */
+            overflow: hidden;
+        }
+
+        .sparkle {
+            position: absolute;
+            bottom: -20px;
+            background: #ffffff; /* Miolo da luzinha branco */
+            border-radius: 50%;
+            box-shadow: 0 0 8px 3px #f59e0b; /* Aura do brilho em dourado real */
+            opacity: 0;
+            animation: floatUp linear infinite;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(0); opacity: 0; }
+            20% { opacity: 0.8; transform: translateY(-20vh) scale(1); }
+            80% { opacity: 0.5; transform: translateY(-80vh) scale(0.8); }
+            100% { transform: translateY(-120vh) scale(0); opacity: 0; }
+        }
     </style>
 </head>
 <body>
@@ -256,7 +309,7 @@
         <div class="crown">👑</div>
 
         <span class="badge">Convite Real</span>
-        
+
         <h1>Luara Sophia - 1 Ano</h1>
         <p class="subtitle">É com prazer que convocamos os príncipes e princesas dos reinos distantes, para comemorar o primeiro ano de reinado da princesa Luara Sophia</p>
 
@@ -282,7 +335,7 @@
             <div class="info-title">📍 Castelo do Evento</div>
             <div class="info-value">Sede dos Idosos</div>
             <p style="color: #cbd5e1; font-size: 0.9rem; margin-top: 5px;">R. da Vaidade, 120, Salinas da Margarida</p>
-            
+
             <a href="https://maps.app.goo.gl/DCaijb767bz7RUhb6" target="_blank" class="btn">Abrir Mapa Real</a>
         </div>
 
@@ -320,5 +373,35 @@
     }, 1000);
 </script>
 
+    <!-- ========================================= -->
+    <!-- SCRIPT DA POEIRA MÁGICA (ANTES DO </body>) -->
+    <!-- ========================================= -->
+    <script>
+        // Cria a camada onde a poeira mágica vai flutuar
+        const dustContainer = document.createElement('div');
+        dustContainer.id = 'magic-dust';
+        document.body.appendChild(dustContainer);
+    
+        // Cria 40 pontinhos de luz espalhados
+        for (let i = 0; i < 40; i++) {
+            let sparkle = document.createElement('div');
+            sparkle.classList.add('sparkle');
+        
+        // Tamanhos variados para dar ideia de profundidade (umas mais perto, outras mais longe)
+        let size = Math.random() * 3 + 1;
+        sparkle.style.width = size + 'px';
+        sparkle.style.height = size + 'px';
+        
+        // Espalhadas aleatoriamente por toda a largura da tela
+        sparkle.style.left = Math.random() * 100 + 'vw';
+        
+        // Velocidades e atrasos diferentes para não subirem todas juntas
+        sparkle.style.animationDuration = (Math.random() * 6 + 4) + 's'; // Demoram de 4 a 10 segundos para subir
+        sparkle.style.animationDelay = (Math.random() * 5) + 's';
+        
+        dustContainer.appendChild(sparkle);
+    }
+</script>
+        
 </body>
 </html>
