@@ -439,6 +439,41 @@
             opacity: 1;
             transform: translateY(0);
         }
+
+        /* ========================================= */
+        /* BOTÃO DE MÚSICA DE FUNDO                  */
+        /* ========================================= */
+        #music-toggle {
+            position: fixed;
+            bottom: 25px;
+            right: 20px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #f59e0b, #d97706);
+            border: 2px solid #fef08a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.4rem;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 9998;
+            transition: transform 0.2s ease;
+        }
+
+        #music-toggle:hover {
+            transform: scale(1.08);
+        }
+
+        #music-toggle.tocando {
+            animation: musicPulse 1.6s ease-in-out infinite;
+        }
+
+        @keyframes musicPulse {
+            0%, 100% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 0 rgba(245, 158, 11, 0.5); }
+            50% { box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 0 0 10px rgba(245, 158, 11, 0); }
+        }
     </style>
 </head>
 <body>
@@ -458,6 +493,14 @@
         <span>Deslize</span>
         <div class="arrow-down">⬇️</div>
     </div>
+
+    <!-- ========================================= -->
+    <!-- BOTÃO DE MÚSICA DE FUNDO                  -->
+    <!-- ========================================= -->
+    <button id="music-toggle" aria-label="Tocar música de fundo">🎵</button>
+    <audio id="background-music" loop preload="auto">
+        <source src="https://raw.githubusercontent.com/Ejr-508/Convite-Luara-Sophia/main/Sofia%20Theme%20Song%20(Instrumental).mp3" type="audio/mpeg">
+    </audio>
 
     <div class="invite-container" id="invite-container">
         <div class="crown">👑</div>
@@ -557,6 +600,133 @@
             indicator.style.opacity = '0';
         } else {
             indicator.style.opacity = '1';
+        }
+    });
+</script>
+
+<!-- ========================================= -->
+<!-- SCRIPT DO BOTÃO DE MÚSICA DE FUNDO         -->
+<!-- ========================================= -->
+<script>
+    const botaoMusica = document.getElementById('music-toggle');
+    const musicaFundo = document.getElementById('background-music');
+    let musicaTocando = false;
+
+    botaoMusica.addEventListener('click', function() {
+        if (musicaTocando) {
+            musicaFundo.pause();
+            botaoMusica.textContent = '🎵';
+            botaoMusica.classList.remove('tocando');
+        } else {
+            musicaFundo.play().catch(function() {
+                // Alguns navegadores bloqueiam o play automático; o toque no botão já resolve isso
+            });
+            botaoMusica.textContent = '🔇';
+            botaoMusica.classList.add('tocando');
+        }
+        musicaTocando = !musicaTocando;
+    });
+</script>
+
+<!-- ========================================= -->
+<!-- SCRIPT DO EFEITO DE CONFETE (AO CONFIRMAR)-->
+<!-- ========================================= -->
+<script>
+    // Cria o canvas onde o confete vai ser desenhado
+    const confettiCanvas = document.createElement('canvas');
+    confettiCanvas.id = 'confetti-canvas';
+    confettiCanvas.style.position = 'fixed';
+    confettiCanvas.style.top = '0';
+    confettiCanvas.style.left = '0';
+    confettiCanvas.style.width = '100vw';
+    confettiCanvas.style.height = '100vh';
+    confettiCanvas.style.pointerEvents = 'none';
+    confettiCanvas.style.zIndex = '100000';
+    document.body.appendChild(confettiCanvas);
+
+    const confettiCtx = confettiCanvas.getContext('2d');
+
+    function resizeConfettiCanvas() {
+        confettiCanvas.width = window.innerWidth;
+        confettiCanvas.height = window.innerHeight;
+    }
+    resizeConfettiCanvas();
+    window.addEventListener('resize', resizeConfettiCanvas);
+
+    // Cores no tema Roxo Real e Dourado
+    const coresConfete = ['#f59e0b', '#fef08a', '#a855f7', '#fdf4ff', '#d97706'];
+
+    let particulasConfete = [];
+    let animandoConfete = false;
+
+    function criarParticulasConfete() {
+        const quantidade = 150;
+        particulasConfete = [];
+
+        for (let i = 0; i < quantidade; i++) {
+            particulasConfete.push({
+                x: Math.random() * confettiCanvas.width,
+                y: -20 - Math.random() * confettiCanvas.height * 0.5,
+                largura: Math.random() * 8 + 4,
+                altura: Math.random() * 12 + 6,
+                cor: coresConfete[Math.floor(Math.random() * coresConfete.length)],
+                velocidadeY: Math.random() * 3 + 2,
+                velocidadeX: Math.random() * 2 - 1,
+                rotacao: Math.random() * 360,
+                velocidadeRotacao: Math.random() * 10 - 5,
+                oscilacao: Math.random() * Math.PI * 2
+            });
+        }
+    }
+
+    function desenharConfete() {
+        confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+
+        let algumaAtiva = false;
+
+        particulasConfete.forEach(function(p) {
+            p.y += p.velocidadeY;
+            p.oscilacao += 0.05;
+            p.x += p.velocidadeX + Math.sin(p.oscilacao) * 1.2;
+            p.rotacao += p.velocidadeRotacao;
+
+            if (p.y < confettiCanvas.height + 20) {
+                algumaAtiva = true;
+            }
+
+            confettiCtx.save();
+            confettiCtx.translate(p.x, p.y);
+            confettiCtx.rotate((p.rotacao * Math.PI) / 180);
+            confettiCtx.fillStyle = p.cor;
+            confettiCtx.fillRect(-p.largura / 2, -p.altura / 2, p.largura, p.altura);
+            confettiCtx.restore();
+        });
+
+        if (algumaAtiva) {
+            requestAnimationFrame(desenharConfete);
+        } else {
+            animandoConfete = false;
+            confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+        }
+    }
+
+    function dispararConfete() {
+        if (animandoConfete) return;
+        animandoConfete = true;
+        criarParticulasConfete();
+        requestAnimationFrame(desenharConfete);
+    }
+
+    // Escuta a confirmação do formulário Tally (enviada via postMessage pelo iframe)
+    window.addEventListener('message', function(evento) {
+        try {
+            const dados = typeof evento.data === 'string' ? JSON.parse(evento.data) : evento.data;
+
+            if (dados && dados.event === 'Tally.FormSubmitted') {
+                dispararConfete();
+            }
+        } catch (erro) {
+            // Mensagem não era do Tally ou não era JSON válido; ignora
         }
     });
 </script>
